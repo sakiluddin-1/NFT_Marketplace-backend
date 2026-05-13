@@ -20,32 +20,25 @@ contract NftMarketplace is ReentrancyGuard {
 
         require(nft.ownerOf(tokenId) == msg.sender, "Not owner");
         require(
-            nft.getApproved(tokenId) == address(this) ||
-            nft.isApprovedForAll(msg.sender, address(this)),
-            "Not approved"
+            nft.getApproved(tokenId) == address(this) || nft.isApprovedForAll(msg.sender, address(this)), "Not approved"
         );
 
         s_listings[nftAddress][tokenId] = Listing(price, msg.sender);
     }
 
     function buyItem(address nftAddress, uint256 tokenId) external payable nonReentrant {
-    Listing memory listing = s_listings[nftAddress][tokenId];
+        Listing memory listing = s_listings[nftAddress][tokenId];
 
-    require(listing.price > 0, "Not listed");
-    require(msg.value == listing.price, "Price mismatch");
+        require(listing.price > 0, "Not listed");
+        require(msg.value == listing.price, "Price mismatch");
 
-    delete s_listings[nftAddress][tokenId];
+        delete s_listings[nftAddress][tokenId];
 
-    IERC721(nftAddress).safeTransferFrom(
-        listing.seller,
-        msg.sender,
-        tokenId
-    );
+        IERC721(nftAddress).safeTransferFrom(listing.seller, msg.sender, tokenId);
 
-    (bool success, ) = payable(listing.seller).call{value: msg.value}("");
-    require(success, "Payment failed");
-
-}
+        (bool success,) = payable(listing.seller).call{value: msg.value}("");
+        require(success, "Payment failed");
+    }
 
     function cancelListing(address nftAddress, uint256 tokenId) external {
         Listing memory listing = s_listings[nftAddress][tokenId];
@@ -56,11 +49,7 @@ contract NftMarketplace is ReentrancyGuard {
         delete s_listings[nftAddress][tokenId];
     }
 
-    function getListing(address nftAddress, uint256 tokenId)
-        public
-        view
-        returns (Listing memory)
-    {
+    function getListing(address nftAddress, uint256 tokenId) public view returns (Listing memory) {
         return s_listings[nftAddress][tokenId];
     }
 }

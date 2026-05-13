@@ -34,11 +34,10 @@ contract NftMarketplaceTest is Test {
         marketplace.listItem(address(nft), tokenId, PRICE);
         vm.stopPrank();
 
-        NftMarketplace.Listing memory listing =
-    marketplace.getListing(address(nft), tokenId);
+        NftMarketplace.Listing memory listing = marketplace.getListing(address(nft), tokenId);
 
-    uint256 price = listing.price;
-    address listingSeller = listing.seller;
+        uint256 price = listing.price;
+        address listingSeller = listing.seller;
 
         assertEq(price, PRICE);
         assertEq(listingSeller, seller);
@@ -132,10 +131,9 @@ contract NftMarketplaceTest is Test {
         marketplace.cancelListing(address(nft), tokenId);
         vm.stopPrank();
 
-        NftMarketplace.Listing memory listing =
-    marketplace.getListing(address(nft), tokenId);
+        NftMarketplace.Listing memory listing = marketplace.getListing(address(nft), tokenId);
 
-    uint256 price = listing.price;
+        uint256 price = listing.price;
 
         assertEq(price, 0);
     }
